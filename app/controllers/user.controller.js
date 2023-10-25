@@ -1,6 +1,7 @@
 const db = require("../models");
 const User = db.user;
 const bcrypt = require("bcryptjs");
+const Booking = db.booking;
 
 exports.allAccess = (req, res) => {
 	res.status(200).send("Public Content.");
@@ -48,5 +49,47 @@ exports.updateProfile = async (req, res) => {
 		res
 			.status(500)
 			.send({ message: "An error occurred while updating the profile." });
+	}
+};
+
+exports.bookSlot = async (req, res) => {
+	try {
+		const userId = req?.userId; // Get the user ID from the token
+		const { firstname, lastname, email, phone } = req?.body; // Get booking data
+
+		// Create a new booking record associated with the user
+		const booking = await Booking.create({
+			firstname,
+			lastname,
+			email,
+			phone,
+			userId,
+		});
+
+		res.status(201).send({ message: "Slot booked successfully!", booking });
+	} catch (error) {
+		console.error(error);
+		res
+			.status(500)
+			.send({ message: "An error occurred while booking the slot." });
+	}
+};
+
+exports.getAllBookings = async (req, res) => {
+	try {
+		// Check if the user is an admin (You can use a role-based system for this)
+		// if (req.user.roles.includes("admin")) {
+		// Fetch all booking records
+		const bookings = await Booking.findAll();
+
+		res.status(200).send({ bookings });
+		// } else {
+		res.status(403).send({ message: "Admin access required." });
+		// }
+	} catch (error) {
+		console.error(error);
+		res
+			.status(500)
+			.send({ message: "An error occurred while fetching bookings." });
 	}
 };

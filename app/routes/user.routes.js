@@ -17,4 +17,10 @@ module.exports = function (app) {
 		controller.adminBoard
 	);
 	app.put("/api/profile", [authJwt.verifyToken], controller.updateProfile);
+	app.post("/api/bookings", [authJwt.verifyToken], controller.bookSlot);
+	app.get(
+		"/api/showbookings",
+		// [authJwt.verifyToken, authJwt.isAdmin],
+		controller.getAllBookings
+	);
 };
